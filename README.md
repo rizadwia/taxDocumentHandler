@@ -1,6 +1,11 @@
 
 # Getting Started
 
+Publish sftp access as RESTful API with following functionality : 
+* list files of directory
+* upload file
+* download file
+
 ### Reference Documentation
 For further reference, please consider the following sections:
 * [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
