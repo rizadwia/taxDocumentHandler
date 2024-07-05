@@ -24,13 +24,20 @@ public class TaxDocumentHandlerApplication {
 		SpringApplication.run(TaxDocumentHandlerApplication.class, args);
 	}
 
-	@Bean
-    public ObjectPool<ChannelSftp> sftpPool(MyConfiguration config) {
+    @Bean
+    public SftpConnectionFactory sftpConnectionFactory(MyConfiguration config) {
         logger.info("Creating SFTP Connection Factory to sftp://"+ config.getHost() +":"+ config.getPort() +" with username : "+ config.getUsername() +", password : "+ config.getPassword());
-        SftpConnectionFactory factory = new SftpConnectionFactory(config.getHost(), config.getPort(), config.getUsername(), config.getPassword());
-        GenericObjectPoolConfig<ChannelSftp> poolConfig = new GenericObjectPoolConfig<>();
-        poolConfig.setMaxTotal(config.getPoolMax());
-        return new GenericObjectPool<>(factory, poolConfig);
+        return SftpConnectionFactory.getInstance(config.getHost(), config.getPort(), config.getUsername(), config.getPassword());
+    }
+
+    @Bean
+    public ObjectPool<ChannelSftp> sftpPool(SftpConnectionFactory sftpConnectionFactory) {
+        GenericObjectPoolConfig<ChannelSftp> config = new GenericObjectPoolConfig<>();
+        config.setMaxTotal(5); // Set max pool size
+        config.setTestOnBorrow(true);
+        config.setTestOnReturn(true);
+        config.setTestWhileIdle(true);
+        return new GenericObjectPool<>(sftpConnectionFactory, config);
     }
 
 }
